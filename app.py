@@ -150,6 +150,27 @@ with tab_history:
             hide_index=True,
         )
 
+        with st.expander("Manage Delivered Orders (delete mistaken entries)"):
+            header = st.columns([2, 2, 1, 2, 2, 2, 1, 1.5])
+            for col, label in zip(
+                header,
+                ["Name", "Mobile Number", "Age", "Sight", "Entry Date", "Delivered Date", "Price", "Action"],
+            ):
+                col.markdown(f"**{label}**")
+
+            for order in delivered_orders:
+                row = st.columns([2, 2, 1, 2, 2, 2, 1, 1.5])
+                row[0].write(order["name"])
+                row[1].write(order["mobile_number"])
+                row[2].write(order["age"])
+                row[3].write(order["sight"])
+                row[4].write(order["entry_date"])
+                row[5].write(order["delivered_date"])
+                row[6].write(f"{order['price']:.2f}")
+                if row[7].button("Delete", key=f"delete_history_{order['id']}"):
+                    db.delete_order(order["id"])
+                    st.rerun()
+
         col_left, col_right = st.columns(2)
 
         with col_left:

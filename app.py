@@ -61,10 +61,11 @@ with tab_dashboard:
             mobile_number = col2.text_input("Mobile Number", max_chars=15)
             age = col3.number_input("Age", min_value=0, max_value=120, step=1)
 
-            col4, col5, col6 = st.columns(3)
-            sight = col4.text_input("Sight (prescription)")
-            entry_date = col5.date_input("Entry Date", value=date.today())
-            price = col6.number_input("Price", min_value=0.0, step=0.01, format="%.2f")
+            col4, col5, col6, col7 = st.columns(4)
+            left_sight = col4.text_input("Left Eye Sight")
+            right_sight = col5.text_input("Right Eye Sight")
+            entry_date = col6.date_input("Entry Date", value=date.today())
+            price = col7.number_input("Price", min_value=0.0, step=0.01, format="%.2f")
 
             submitted = st.form_submit_button("Add Order")
             if submitted:
@@ -72,14 +73,21 @@ with tab_dashboard:
                     st.error("Name is required.")
                 elif not mobile_number.strip().isdigit():
                     st.error("Mobile number must contain digits only.")
-                elif not sight.strip():
-                    st.error("Sight is required.")
+                elif len(mobile_number.strip()) != 10:
+                    st.error("Mobile number must be exactly 10 digits.")
+                elif age <= 0:
+                    st.error("Age must be greater than 0.")
+                elif price < 0:
+                    st.error("Price cannot be negative.")
+                elif not left_sight.strip() and not right_sight.strip():
+                    st.error("At least one of Left/Right Eye Sight is required.")
                 else:
+                    sight = f"L: {left_sight.strip() or '-'} | R: {right_sight.strip() or '-'}"
                     db.add_order(
                         name.strip(),
                         mobile_number.strip(),
                         int(age),
-                        sight.strip(),
+                        sight,
                         entry_date.isoformat(),
                         float(price),
                     )
